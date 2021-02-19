@@ -198,32 +198,24 @@ class Caramel {
                 console.error(`The cmFor data of ${cmFor} is undefined.`);
                 continue;
             }
- 
-            // Show hidden API elements
-            if (element.getAttribute('api')) {
-                element.removeAttribute('api');
-                if (element.tagName.toLowerCase() === 'li') {
-                    element.style.display = 'list-item';
-                } else {
-                    element.style.display = 'block';
-                }
-            }
 
             // Remove element attributes
             element.removeAttribute('cmfor');
             element.removeAttribute('cmitem');
 
             let elementHTML = element.outerHTML;
-
             let newElement = '';
-            for (let data of forData) {
+            let dataCounter = 0;
 
+            for (let data of forData) {
+                
                 window[cmItem] = data;
 
                 let toReplaceFound = this.findOccurrences(elementHTML);
 
                 // Replace element occurrences
                 let elementToAppend = '';
+
                 for (let item of toReplaceFound) {
                     if (!elementToAppend) {
                         elementToAppend = this.removeSpaces(elementHTML).split(item.toReplace).join(item.data);
@@ -239,6 +231,8 @@ class Caramel {
                     newElement += this.removeSpaces(elementToAppend);
                 }
 
+                dataCounter ++;
+
             }
             
             // Replace original element
@@ -247,7 +241,7 @@ class Caramel {
         }
     
     }
-    
+
     /**
      * Main method that loads Caramel
      */
