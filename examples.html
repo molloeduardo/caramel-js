@@ -39,6 +39,12 @@
         <p>{{ nestedObject.test.type }}</p>
 
         <hr>
+        
+        <h3>Variable from array</h3>
+        <h4>The following text comes from an array</h4>
+        <p>{{ arrayExample[2] }}</p>
+
+        <hr>
 
         <h3>Variable inside HTML parameter</h3>
         <h4>The URL inside the following link comes from a variable</h4>
@@ -55,6 +61,32 @@
         <h3>If condition</h3>
         <h4>The following text is visible because the condition is true.</h4>
         <p cmIf="tryVariable.test === 1">Hello!</p>
+
+        <hr>
+
+        <h3>Array iteration</h3>
+        <h4>The following list comes from an array</h4>
+        <ul>
+            <li cmFor="arrayExample" cmItem="fruit">
+                {{ fruit }}
+            </li>
+        </ul>
+        <hr>
+        <h3>Complex nested array iteration</h3>
+        <h4>The following list comes from a complex nested array of objects</h4>
+        <ul>
+            <li cmFor="complexObject.batters.batter" cmItem="item">
+                {{ item.type }}
+            </li>
+        </ul>
+        <hr>
+        <h3>Array iteration and get multiple values</h3>
+        <h4>The following list comes from an object with array of objects</h4>
+        <ul>
+            <li cmFor="objectWithArrayOfObjects.batter" cmItem="item">
+                {{ item.id }} - {{ item.type }}
+            </li>
+        </ul>
 
         <hr>
 

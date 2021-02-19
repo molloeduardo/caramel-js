@@ -112,20 +112,22 @@ class Caramel {
         const elements = document.documentElement.getElementsByTagName('*');
 
         for (let element of elements) {
+            if (!element.getAttribute('cmfor')) {
 
-            // Get all the occurrences for the element
-            let elementHTML = element.innerHTML;
-            let toReplaceFound = this.findOccurrences(elementHTML);
+                // Get all the occurrences for the element
+                let elementHTML = element.innerHTML;
+                let toReplaceFound = this.findOccurrences(elementHTML);
 
-            // Replace all the occurrences found with the data
-            let newElement = elementHTML;
-            for (let item of toReplaceFound) {
-                newElement = this.removeSpaces(newElement).split(item.toReplace).join(item.data);
+                // Replace all the occurrences found with the data
+                let newElement = elementHTML;
+                for (let item of toReplaceFound) {
+                    newElement = this.removeSpaces(newElement).split(item.toReplace).join(item.data);
+                }
+
+                // Replace original DOM element
+                element.innerHTML = newElement;
+
             }
-
-            // Replace original DOM element
-            element.innerHTML = newElement;
-
         }
         
     }
@@ -165,12 +167,95 @@ class Caramel {
     }
 
     /**
+     * Method that manages the arrays inside the DOM elements
+     */
+    loadArrays() {
+
+        // Get all cmFor DOM elements
+        const elements = this.getAllElementsWithAttribute('cmfor');
+
+        for (let element of elements) {
+
+            // Get element attributes
+            let cmFor = element.getAttribute('cmfor');
+            let cmItem = element.getAttribute('cmItem');
+
+            // Skip iteration if the cmItem is not specified
+            if (!cmItem) {
+                console.error(`You must specify a cmItem name for this cmFor: ${cmFor}.`);
+                continue;
+            }
+
+            let forData;
+            try {
+                forData = eval(cmFor);
+            } catch(error) {
+                console.error(`The cmFor data of ${cmFor} is undefined.`);
+                continue;
+            }
+
+            if (!forData) {
+                console.error(`The cmFor data of ${cmFor} is undefined.`);
+                continue;
+            }
+ 
+            // Show hidden API elements
+            if (element.getAttribute('api')) {
+                element.removeAttribute('api');
+                if (element.tagName.toLowerCase() === 'li') {
+                    element.style.display = 'list-item';
+                } else {
+                    element.style.display = 'block';
+                }
+            }
+
+            // Remove element attributes
+            element.removeAttribute('cmfor');
+            element.removeAttribute('cmitem');
+
+            let elementHTML = element.outerHTML;
+
+            let newElement = '';
+            for (let data of forData) {
+
+                window[cmItem] = data;
+
+                let toReplaceFound = this.findOccurrences(elementHTML);
+
+                // Replace element occurrences
+                let elementToAppend = '';
+                for (let item of toReplaceFound) {
+                    if (!elementToAppend) {
+                        elementToAppend = this.removeSpaces(elementHTML).split(item.toReplace).join(item.data);
+                    } else {
+                        elementToAppend = this.removeSpaces(elementToAppend).split(item.toReplace).join(item.data);
+                    }
+                }
+
+                // Generate final DOM element HTML
+                if (!newElement) {
+                    newElement = this.removeSpaces(elementToAppend);
+                } else {
+                    newElement += this.removeSpaces(elementToAppend);
+                }
+
+            }
+            
+            // Replace original element
+            element.outerHTML = newElement;
+
+        }
+    
+    }
+    
+    /**
      * Main method that loads Caramel
      */
     load() {
         this.removeHTMLComments();
         this.loadTemplates();
         this.loadConditions();
+        this.loadArrays();
         this.loadVariables();
     }
 
