@@ -90,9 +90,32 @@
 
         <hr>
 
+        <h3>Check if an element is first or is last</h3>
+        <h4>Knowing if an array item is first or last</h4>
+        <ul>
+            <li cmFor="objectWithArrayOfObjects.batter" cmItem="item">
+                <p ifNotLast ifNotFirst>{{ item.type }}</p>
+                <p ifFirst>{{ item.type }} <b>THIS IS FIRST</b></p>
+                <p ifLast>{{ item.type }} <b>THIS IS LAST</b></p>
+            </li>
+        </ul>
+        <hr>
+        <h3>Check if an element is even or odd</h3>
+        <h4>Knowing if an array item is even or odd</h4>
+        <ul>
+            <li cmFor="arrayOfNumbers" cmItem="item">
+                <p ifEven ifNumber>{{ item }}<b>THIS IS EVEN</b></p>
+                <p ifOdd ifNumber>{{ item }}<b>THIS IS ODD</b></p>
+            </li>
+        </ul>
+
+        <hr>
+
         <h3>Templates</h3>
         <h4>This form comes from a template</h4>
         <div cm-template="inputs"></div>
+
+        <p ifNumber>{{ tryVariable.test }}</p>
         
     </body>
 

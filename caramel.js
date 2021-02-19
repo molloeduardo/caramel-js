@@ -167,6 +167,112 @@ class Caramel {
     }
 
     /**
+     * Method that manages the ifFirst attribute
+     * @param {object} element - The DOM element to scan
+     * @param {number} index - The index of the element inside the data list
+     */
+    checkForIfFirstElement(element, index) {
+        const ifFirstElements = element.querySelectorAll('[ifFirst]');
+        for (const ifElement of ifFirstElements) {
+            ifElement.removeAttribute('ifFirst');
+            if (index > 0) {
+                ifElement.remove();
+            }
+        }
+    }
+
+    /**
+     * Method that manages the ifLast attribute
+     * @param {object} element - The DOM element to scan
+     * @param {number} index - The index of the element inside the data list
+     * @param {number} dataMaxIndex - The length of the data list
+     */
+    checkForIfLastElement(element, index, dataMaxIndex) {
+        const ifLastElements = element.querySelectorAll('[ifLast]');
+        for (const ifElement of ifLastElements) {
+            ifElement.removeAttribute('ifLast');
+            if (index < dataMaxIndex - 1) {
+                ifElement.remove();
+            }
+        }
+    }
+
+    /**
+     * Method that manages the ifNotFirst and ifNotLast attributes
+     * @param {object} element - The DOM element to scan
+     * @param {number} index - The index of the element inside the data list
+     * @param {number} dataMaxIndex - The length of the data list
+     */
+    checkForIfNotFirstAndIfNotLast(element, index, dataMaxIndex) {
+
+        const ifNotFirstElements = element.querySelectorAll('[ifNotFirst]');
+        const ifNotLastElements = element.querySelectorAll('[ifNotLast]');
+
+        for (const ifNotFirstElement of ifNotFirstElements) {
+            for (const ifNotLastElement of ifNotLastElements) {
+
+                if (ifNotLastElement && ifNotFirstElement) {
+                    ifNotFirstElement.removeAttribute('ifNotFirst');
+                    ifNotLastElement.removeAttribute('ifNotLast');
+                    if (index === 0 || index === dataMaxIndex - 1) {
+                        ifNotFirstElement.remove();
+                    }
+                } else if (ifNotLastElement) {
+                    ifNotLastElement.removeAttribute('ifNotLast');
+                    if (index === dataMaxIndex.length - 1) {
+                        ifNotLastElement.remove();
+                    }
+                } else if (ifNotFirstElement) {
+                    ifNotFirstElement.removeAttribute('ifNotFirst');
+                    if (index === 0) {
+                        ifNotFirstElement.remove();
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * Method that manages the ifNumber attribute
+     * @param {object} element - The DOM element to scan
+     * @param {any} data - The data to check
+     */
+    checkForNumber(element, data) {
+        const ifNumberElements = element.querySelectorAll('[ifNumber]');
+        for (const ifElement of ifNumberElements) {
+            ifElement.removeAttribute('ifNumber');
+            if (isNaN(data)) {
+                ifElement.remove();
+            }
+        }
+    }
+
+    /**
+     * Method that manages the ifNotNumber attribute
+     * @param {object} element - The DOM element to scan
+     * @param {any} data - The data to check
+     */
+    checkForNotNumber(element, data) {
+        const ifNotNumberElements = element.querySelectorAll('[ifNotNumber]');
+        for (const ifElement of ifNotNumberElements) {
+            ifElement.removeAttribute('ifNotNumber');
+            if (!isNaN(data)) {
+                ifElement.remove();
+            }
+        }
+    }
+
+    checkForEvenNumber() {
+
+    }
+
+    checkForOddNumber() {
+
+    }
+
+    /**
      * Method that manages the arrays inside the DOM elements
      */
     loadArrays() {
@@ -203,7 +309,7 @@ class Caramel {
             element.removeAttribute('cmfor');
             element.removeAttribute('cmitem');
 
-            let elementHTML = element.outerHTML;
+            let elementHTML;
             let newElement = '';
             let dataCounter = 0;
 
@@ -211,6 +317,7 @@ class Caramel {
                 
                 window[cmItem] = data;
 
+                elementHTML = element.outerHTML;
                 let toReplaceFound = this.findOccurrences(elementHTML);
 
                 // Replace element occurrences
@@ -224,11 +331,55 @@ class Caramel {
                     }
                 }
 
+                let elementModified = document.createElement('div');
+                elementModified.innerHTML = elementToAppend;
+                
+                /*
+                this.checkForIfFirstElement(elementModified, dataCounter);
+                this.checkForIfLastElement(elementModified, dataCounter, forData.length);
+                this.checkForIfNotFirstAndIfNotLast(elementModified, dataCounter, forData.length);
+
+                // Check for number
+                this.checkForNumber(elementModified, data);
+                this.checkForNotNumber(elementModified, data);
+                */
+
+                // Check for not number
+
+
+                // Check for even element
+                let ifEvenElement = elementModified.querySelector('[ifEven]');
+                if (ifEvenElement) {
+                    ifEvenElement.removeAttribute('ifEven');
+                    if (isNaN(data)) {
+                        console.warn('The data "' + data + '" is not a number.');
+                        ifEvenElement.remove();
+                    } else {
+                        if (data % 2 !== 0) {
+                            ifEvenElement.remove();
+                        }
+                    }
+                }
+
+                // Check for odd element
+                let ifOddElement = elementModified.querySelector('[ifOdd]');
+                if (ifOddElement) {
+                    ifOddElement.removeAttribute('ifOdd');
+                    if (isNaN(data)) {
+                        console.warn('The data "' + data + '" is not a number.');
+                        ifOddElement.remove();
+                    } else {
+                        if (data % 2 == 0) {
+                            ifOddElement.remove();
+                        }
+                    }
+                }
+            
                 // Generate final DOM element HTML
                 if (!newElement) {
-                    newElement = this.removeSpaces(elementToAppend);
+                    newElement = this.removeSpaces(elementModified.innerHTML);
                 } else {
-                    newElement += this.removeSpaces(elementToAppend);
+                    newElement += this.removeSpaces(elementModified.innerHTML);
                 }
 
                 dataCounter ++;
@@ -242,6 +393,28 @@ class Caramel {
     
     }
 
+    loadComplexConditions() {
+
+        const elements = document.documentElement.getElementsByTagName('*');
+        for (const element of elements) {
+
+            let elementHTML = element.outerHTML;
+            let toReplaceFound = this.findOccurrences(elementHTML);
+
+            let index = 0;
+            for (let item of toReplaceFound) {
+                this.checkForIfFirstElement(element, index);
+                this.checkForIfLastElement(element, index, toReplaceFound.length);
+                this.checkForIfNotFirstAndIfNotLast(element, index, toReplaceFound.length);
+                this.checkForNumber(element, item.data);
+                this.checkForNotNumber(element, item.data);
+                index ++;
+            }
+        
+        }
+
+    }
+
     /**
      * Main method that loads Caramel
      */
@@ -250,6 +423,7 @@ class Caramel {
         this.loadTemplates();
         this.loadConditions();
         this.loadArrays();
+        this.loadComplexConditions();
         this.loadVariables();
     }
 
