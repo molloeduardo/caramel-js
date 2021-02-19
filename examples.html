@@ -56,6 +56,18 @@
         <h4>The following text is visible because the condition is true.</h4>
         <p cmIf="tryVariable.test === 1">Hello!</p>
 
+        <hr>
+
+        <h3>Templates</h3>
+        <h4>This form comes from a template</h4>
+        <div cm-template="inputs"></div>
+
     </body>
 
 </html>
+
+<cm-template name="inputs">
+    <input type="text" placeholder="Test 1">
+    <input type="text" placeholder="Test 2">
+    <button>Submit</button>
+</cm-template>

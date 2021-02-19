@@ -131,10 +131,45 @@ class Caramel {
     }
 
     /**
+     * Method that loads all the Caramel templates
+     */
+    loadTemplates() {
+
+        // DOM elements
+        const templates = document.getElementsByTagName('cm-template');
+        const containers = this.getAllElementsWithAttribute('cm-template');
+
+        for (let container of containers) {
+            for (let template of templates) {
+
+                // Hiding the template
+                template.style.display = 'none';
+
+                // Adding the template
+                const templateName = container.getAttribute('cm-template');
+                if (template.getAttribute('name') === templateName) {
+                    container.innerHTML = template.innerHTML;
+                    container.removeAttribute('cm-template');
+                    template.remove();
+                }
+
+            }
+        }
+
+        // Check for templates not found
+        for (let container of containers) {
+            const templateName = container.getAttribute('cm-template');
+            if (templateName) console.warn(`Template not found: ${templateName}.`);
+        }
+
+    }
+
+    /**
      * Main method that loads Caramel
      */
     load() {
         this.removeHTMLComments();
+        this.loadTemplates();
         this.loadConditions();
         this.loadVariables();
     }
