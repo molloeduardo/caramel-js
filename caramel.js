@@ -298,10 +298,14 @@ class Caramel {
                 if (template.getAttribute('name') === templateName) {
                     container.innerHTML = template.innerHTML;
                     container.removeAttribute('cm-template');
-                    template.remove();
                 }
 
             }
+        }
+
+        // Remove templates
+        for (let template of templates) {
+            template.remove();
         }
 
         // Check for templates not found

@@ -292,7 +292,10 @@ You can use block of code called **templates**. This is very useful when you hav
         <div cm-template="my-template"></div>
 
         <cm-template name="my-template">
-            <!-- All the stuff -->
+            <b>This form comes from a template</b>
+            <input type="text" placeholder="Test 1">
+            <input type="text" placeholder="Test 2">
+            <button>Submit</button>
         </cm-template>
 
     </body>
