@@ -360,27 +360,30 @@ class Caramel {
 
                 // Replace element occurrences
                 let elementToAppend = '';
+                let elementModified;
 
                 for (let item of toReplaceFound) {
+
                     if (!elementToAppend) {
                         elementToAppend = this.removeSpaces(elementHTML).split(item.toReplace).join(item.data);
                     } else {
                         elementToAppend = this.removeSpaces(elementToAppend).split(item.toReplace).join(item.data);
                     }
+
+                    elementModified = document.createElement('div');
+                    elementModified.innerHTML = elementToAppend;
+
+                    // Check for complex conditions
+                    this.checkForIfFirstElement(elementModified, dataCounter);
+                    this.checkForIfLastElement(elementModified, dataCounter, forData.length);
+                    this.checkForIfNotFirstAndIfNotLast(elementModified, dataCounter, forData.length);
+                    this.checkForNumber(elementModified, item.data);
+                    this.checkForNotNumber(elementModified, item.data);
+                    this.checkForEvenNumber(elementModified, item.data);
+                    this.checkForOddNumber(elementModified, item.data);
+                    
                 }
 
-                let elementModified = document.createElement('div');
-                elementModified.innerHTML = elementToAppend;
-                
-                // Check for complex conditions
-                this.checkForIfFirstElement(elementModified, dataCounter);
-                this.checkForIfLastElement(elementModified, dataCounter, forData.length);
-                this.checkForIfNotFirstAndIfNotLast(elementModified, dataCounter, forData.length);
-                this.checkForNumber(elementModified, data);
-                this.checkForNotNumber(elementModified, data);
-                this.checkForEvenNumber(elementModified, data);
-                this.checkForOddNumber(elementModified, data);
-            
                 // Generate final DOM element HTML
                 if (!newElement) {
                     newElement = this.removeSpaces(elementModified.innerHTML);
