@@ -55,7 +55,7 @@ var simpleVariable = 'My favourite animal is the walrus';
 
 var apiExampleList = {};
 
-var tryVariable = {test: 1};
+var tryVariable = {test: 'asd'};
 
 var googleURL = 'https://www.google.com/';
 

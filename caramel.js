@@ -4,6 +4,12 @@ class Caramel {
     CM_START_VAR_CHAR = '{{';
     CM_END_VAR_CHAR = '}}';
 
+    // Variabiles
+    loadingTime = '';
+
+    // Settings
+    printLoadingTime = false;
+
     constructor() {
 
     }
@@ -99,69 +105,6 @@ class Caramel {
                 console.error(`The condition ${cmIf} is not valid.`);
             }
             element.removeAttribute('cmif');
-        }
-
-    }
-
-    /**
-     * Method that manages the variables inside the DOM elements
-     */
-    loadVariables() {
-        
-        // Get all the DOM elements
-        const elements = document.documentElement.getElementsByTagName('*');
-
-        for (let element of elements) {
-            if (!element.getAttribute('cmfor')) {
-
-                // Get all the occurrences for the element
-                let elementHTML = element.innerHTML;
-                let toReplaceFound = this.findOccurrences(elementHTML);
-
-                // Replace all the occurrences found with the data
-                let newElement = elementHTML;
-                for (let item of toReplaceFound) {
-                    newElement = this.removeSpaces(newElement).split(item.toReplace).join(item.data);
-                }
-
-                // Replace original DOM element
-                element.innerHTML = newElement;
-
-            }
-        }
-        
-    }
-
-    /**
-     * Method that loads all the Caramel templates
-     */
-    loadTemplates() {
-
-        // DOM elements
-        const templates = document.getElementsByTagName('cm-template');
-        const containers = this.getAllElementsWithAttribute('cm-template');
-
-        for (let container of containers) {
-            for (let template of templates) {
-
-                // Hiding the template
-                template.style.display = 'none';
-
-                // Adding the template
-                const templateName = container.getAttribute('cm-template');
-                if (template.getAttribute('name') === templateName) {
-                    container.innerHTML = template.innerHTML;
-                    container.removeAttribute('cm-template');
-                    template.remove();
-                }
-
-            }
-        }
-
-        // Check for templates not found
-        for (let container of containers) {
-            const templateName = container.getAttribute('cm-template');
-            if (templateName) console.warn(`Template not found: ${templateName}.`);
         }
 
     }
@@ -264,11 +207,106 @@ class Caramel {
         }
     }
 
-    checkForEvenNumber() {
-
+    /**
+     * Method that manages the ifEven attribute
+     * @param {object} element - The DOM element to scan
+     * @param {any} data - The data to check
+     */
+    checkForEvenNumber(element, data) {
+        const ifEvenElements = element.querySelectorAll('[ifEven]');
+        for (const ifElement of ifEvenElements) {
+            ifElement.removeAttribute('ifEven');
+            if (isNaN(data)) {
+                console.warn('The data "' + data + '" is not a number.');
+                ifElement.remove();
+            } else {
+                if (data % 2 !== 0) {
+                    ifElement.remove();
+                }
+            }
+        }
     }
 
-    checkForOddNumber() {
+    /**
+     * Method that manages the ifEven attribute
+     * @param {object} element - The DOM element to scan
+     * @param {any} data - The data to check
+     */
+    checkForOddNumber(element, data) {
+        const ifOddElements = element.querySelectorAll('[ifOdd]');
+        for (const ifElement of ifOddElements) {
+            ifElement.removeAttribute('ifOdd');
+            if (isNaN(data)) {
+                console.warn('The data "' + data + '" is not a number.');
+                ifElement.remove();
+            } else {
+                if (data % 2 == 0) {
+                    ifElement.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * Method that manages the variables inside the DOM elements
+     */
+    loadVariables() {
+        
+        // Get all the DOM elements
+        const elements = document.documentElement.getElementsByTagName('*');
+
+        for (let element of elements) {
+            if (!element.getAttribute('cmfor')) {
+
+                // Get all the occurrences for the element
+                let elementHTML = element.innerHTML;
+                let toReplaceFound = this.findOccurrences(elementHTML);
+
+                // Replace all the occurrences found with the data
+                let newElement = elementHTML;
+                for (let item of toReplaceFound) {
+                    newElement = this.removeSpaces(newElement).split(item.toReplace).join(item.data);
+                }
+
+                // Replace original DOM element
+                element.innerHTML = newElement;
+
+            }
+        }
+        
+    }
+
+    /**
+     * Method that loads all the Caramel templates
+     */
+    loadTemplates() {
+
+        // DOM elements
+        const templates = document.getElementsByTagName('cm-template');
+        const containers = this.getAllElementsWithAttribute('cm-template');
+
+        for (let container of containers) {
+            for (let template of templates) {
+
+                // Hiding the template
+                template.style.display = 'none';
+
+                // Adding the template
+                const templateName = container.getAttribute('cm-template');
+                if (template.getAttribute('name') === templateName) {
+                    container.innerHTML = template.innerHTML;
+                    container.removeAttribute('cm-template');
+                    template.remove();
+                }
+
+            }
+        }
+
+        // Check for templates not found
+        for (let container of containers) {
+            const templateName = container.getAttribute('cm-template');
+            if (templateName) console.warn(`Template not found: ${templateName}.`);
+        }
 
     }
 
@@ -334,46 +372,14 @@ class Caramel {
                 let elementModified = document.createElement('div');
                 elementModified.innerHTML = elementToAppend;
                 
-                /*
+                // Check for complex conditions
                 this.checkForIfFirstElement(elementModified, dataCounter);
                 this.checkForIfLastElement(elementModified, dataCounter, forData.length);
                 this.checkForIfNotFirstAndIfNotLast(elementModified, dataCounter, forData.length);
-
-                // Check for number
                 this.checkForNumber(elementModified, data);
                 this.checkForNotNumber(elementModified, data);
-                */
-
-                // Check for not number
-
-
-                // Check for even element
-                let ifEvenElement = elementModified.querySelector('[ifEven]');
-                if (ifEvenElement) {
-                    ifEvenElement.removeAttribute('ifEven');
-                    if (isNaN(data)) {
-                        console.warn('The data "' + data + '" is not a number.');
-                        ifEvenElement.remove();
-                    } else {
-                        if (data % 2 !== 0) {
-                            ifEvenElement.remove();
-                        }
-                    }
-                }
-
-                // Check for odd element
-                let ifOddElement = elementModified.querySelector('[ifOdd]');
-                if (ifOddElement) {
-                    ifOddElement.removeAttribute('ifOdd');
-                    if (isNaN(data)) {
-                        console.warn('The data "' + data + '" is not a number.');
-                        ifOddElement.remove();
-                    } else {
-                        if (data % 2 == 0) {
-                            ifOddElement.remove();
-                        }
-                    }
-                }
+                this.checkForEvenNumber(elementModified, data);
+                this.checkForOddNumber(elementModified, data);
             
                 // Generate final DOM element HTML
                 if (!newElement) {
@@ -393,38 +399,19 @@ class Caramel {
     
     }
 
-    loadComplexConditions() {
-
-        const elements = document.documentElement.getElementsByTagName('*');
-        for (const element of elements) {
-
-            let elementHTML = element.outerHTML;
-            let toReplaceFound = this.findOccurrences(elementHTML);
-
-            let index = 0;
-            for (let item of toReplaceFound) {
-                this.checkForIfFirstElement(element, index);
-                this.checkForIfLastElement(element, index, toReplaceFound.length);
-                this.checkForIfNotFirstAndIfNotLast(element, index, toReplaceFound.length);
-                this.checkForNumber(element, item.data);
-                this.checkForNotNumber(element, item.data);
-                index ++;
-            }
-        
-        }
-
-    }
-
     /**
      * Main method that loads Caramel
      */
     load() {
+        const startTime = new Date().getTime();
         this.removeHTMLComments();
         this.loadTemplates();
         this.loadConditions();
         this.loadArrays();
-        this.loadComplexConditions();
         this.loadVariables();
+        const finalTime = new Date().getTime();
+        this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
+        if (this.printLoadingTime) console.warn(this.loadingTime);
     }
 
 }
