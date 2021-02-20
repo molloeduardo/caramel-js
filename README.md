@@ -257,6 +257,29 @@ You can use this simply attributes to know if an array number you are scanning i
     </body>
 </html>
 ```
+## AJAX requests
+In order to use AJAX you need the **api** attribute setted on true on the HTML element that you want to change after the call.
+```
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js" type="text/javascript"></script>
+        <script src="https://creativajs.altervista.org/caramel-js/0.1/caramel.js"></script>
+    </head>
+    <body>
+        <ul>
+            <li cmFor="apiExampleList.data" cmItem="item" api="true">
+                {{ item.first_name }}
+            </li>
+        </ul>
+    </body>
+</html>
+
+<script>
+    $.get('https://reqres.in/api/users?page=2', function(response) {
+        apiExampleList = response;
+    });
+</script>
+```
 ## Load HTML template
 You can use block of code called **templates**. This is very useful when you have to use a block of code multiple times.
 ```

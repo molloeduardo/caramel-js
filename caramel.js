@@ -63,10 +63,10 @@ class Caramel {
             try {
                 data = eval(param);
                 if (!data) {
-                    console.error(`The object ${param} is undefined.`);
+                    console.warn(`The object ${param} is undefined.`);
                 }
             } catch {
-                console.error(`The object ${param} is undefined.`);
+                console.warn(`The object ${param} is undefined.`);
             }
 
             // Object building
@@ -256,7 +256,7 @@ class Caramel {
         const elements = document.documentElement.getElementsByTagName('*');
 
         for (let element of elements) {
-            if (!element.getAttribute('cmfor')) {
+            if (!element.getAttribute('cmfor') && !element.getAttribute('api')) {
 
                 // Get all the occurrences for the element
                 let elementHTML = element.innerHTML;
@@ -265,7 +265,9 @@ class Caramel {
                 // Replace all the occurrences found with the data
                 let newElement = elementHTML;
                 for (let item of toReplaceFound) {
-                    newElement = this.removeSpaces(newElement).split(item.toReplace).join(item.data);
+                    if (item.data) {
+                        newElement = newElement.split(item.toReplace).join(item.data);
+                    }
                 }
 
                 // Replace original DOM element
@@ -320,6 +322,9 @@ class Caramel {
 
         for (let element of elements) {
 
+            // API element
+            let isAPIElement = element.getAttribute('api');
+
             // Get element attributes
             let cmFor = element.getAttribute('cmfor');
             let cmItem = element.getAttribute('cmItem');
@@ -334,12 +339,12 @@ class Caramel {
             try {
                 forData = eval(cmFor);
             } catch(error) {
-                console.error(`The cmFor data of ${cmFor} is undefined.`);
+                console.warn(`The cmFor data of ${cmFor} is undefined.`);
                 continue;
             }
 
             if (!forData) {
-                console.error(`The cmFor data of ${cmFor} is undefined.`);
+                console.warn(`The cmFor data of ${cmFor} is undefined.`);
                 continue;
             }
 
@@ -355,6 +360,16 @@ class Caramel {
                 
                 window[cmItem] = data;
 
+                // Show hidden API elements
+                if (isAPIElement) {
+                    element.removeAttribute('api');
+                    if (element.tagName.toLowerCase() === 'li') {
+                        element.style.display = 'list-item';
+                    } else {
+                        element.style.display = 'block';
+                    }
+                }
+
                 elementHTML = element.outerHTML;
                 let toReplaceFound = this.findOccurrences(elementHTML);
 
@@ -362,12 +377,14 @@ class Caramel {
                 let elementToAppend = '';
                 let elementModified;
 
-                for (let item of toReplaceFound) {
+                if (!toReplaceFound || toReplaceFound.length < 1) continue;
 
+                for (let item of toReplaceFound) {
+                    
                     if (!elementToAppend) {
-                        elementToAppend = this.removeSpaces(elementHTML).split(item.toReplace).join(item.data);
+                        elementToAppend = elementHTML.split(item.toReplace).join(item.data);
                     } else {
-                        elementToAppend = this.removeSpaces(elementToAppend).split(item.toReplace).join(item.data);
+                        elementToAppend = elementToAppend.split(item.toReplace).join(item.data);
                     }
 
                     elementModified = document.createElement('div');
@@ -403,10 +420,21 @@ class Caramel {
     }
 
     /**
+     * Method that hide all the API HTML blocks before the server response
+     */
+    apiCalls() {
+        let components = this.getAllElementsWithAttribute('api');
+        for (let item of components) {
+            item.style.display = 'none';
+        }
+    }
+
+    /**
      * Main method that loads Caramel
      */
     load() {
         const startTime = new Date().getTime();
+        this.apiCalls();
         this.removeHTMLComments();
         this.loadTemplates();
         this.loadConditions();
