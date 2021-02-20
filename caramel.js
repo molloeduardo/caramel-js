@@ -381,7 +381,7 @@ class Caramel {
                     this.checkForNotNumber(elementModified, item.data);
                     this.checkForEvenNumber(elementModified, item.data);
                     this.checkForOddNumber(elementModified, item.data);
-                    
+
                 }
 
                 // Generate final DOM element HTML
@@ -419,19 +419,17 @@ class Caramel {
 
 }
 
+var caramel = new Caramel();
+
 window.onload = function() {
-
-    // Caramel load
-    var caramel = new Caramel();
     caramel.load();
+}
 
-    // Caramel update after an AJAX call
-    if (window.jQuery) {
-        $.ajaxSetup({
-            complete: function (xhr, settings) {
-                caramel.load();
-            }
-        });
-    }
-
+// Caramel update after an AJAX call
+if (window.jQuery) {
+    $.ajaxSetup({
+        complete: function (xhr, settings) {
+            caramel.load();
+        }
+    });
 }
