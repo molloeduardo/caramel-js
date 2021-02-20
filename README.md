@@ -1,6 +1,6 @@
 # Caramel.js
 Caramel.js allows you to use JavaScript variables, arrays, and objects inside HTML files, importing just one JavaScript file.
-<br>
+<br><br>
 One of the biggest problems of using jQuery or pure JavaScript is that you can't iterate through objects, after a server response for example.
 <br>You can't even write the content of a JS variable in a readable way.
 <br>Caramel is the solution to this problems. You can:
