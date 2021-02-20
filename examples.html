@@ -71,7 +71,9 @@
                 {{ fruit }}
             </li>
         </ul>
+
         <hr>
+         
         <h3>Complex nested array iteration</h3>
         <h4>The following list comes from a complex nested array of objects</h4>
         <ul>
@@ -79,13 +81,28 @@
                 {{ item.type }}
             </li>
         </ul>
+
         <hr>
+
         <h3>Array iteration and get multiple values</h3>
         <h4>The following list comes from an object with array of objects</h4>
         <ul>
             <li cmFor="objectWithArrayOfObjects.batter" cmItem="item">
                 {{ item.id }} - {{ item.type }}
             </li>
+        </ul>
+
+        <hr>
+
+        <h3>Complex Array iteration</h3>
+        <h4>The following list comes from an object with complex array of objects</h4>
+        <ul>
+            <li cmFor="nestedArray" cmItem="parent">
+                {{ parent.title }}
+                <li cmFor="parent.items" cmItem="child">
+                    {{ child.title }}
+                </li>
+            </li> 
         </ul>
 
         <hr>
