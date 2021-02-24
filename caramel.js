@@ -433,6 +433,24 @@ class Caramel {
         }
     }
 
+    /*
+     * Method that manages all the complex conditions such as ifNumber, ifEven
+     */
+    loadComplexConditions() {
+        const elements = document.documentElement.getElementsByTagName('*');
+        let elementHTML = '';
+        for (let element of elements) {
+            elementHTML = element.innerHTML;
+            let toReplaceFound = this.findOccurrences(elementHTML);
+            for (let item of toReplaceFound) {
+                this.checkForNumber(element, item.data);
+                this.checkForNotNumber(element, item.data);
+                this.checkForEvenNumber(element, item.data);
+                this.checkForOddNumber(element, item.data);
+            }
+        }
+    }
+
     /**
      * Main method that loads Caramel
      */
@@ -442,6 +460,7 @@ class Caramel {
         this.removeHTMLComments();
         this.loadTemplates();
         this.loadConditions();
+        this.loadComplexConditions();
         this.loadArrays();
         this.loadVariables();
         const finalTime = new Date().getTime();
