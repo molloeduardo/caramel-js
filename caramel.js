@@ -102,7 +102,7 @@ class Caramel {
                     element.remove();
                 }
             } catch(error) {
-                console.error(`The condition ${cmIf} is not valid.`);
+                console.error(`The condition ${cmIf} is not valid: ${error}`);
             }
             element.removeAttribute('cmif');
         }
