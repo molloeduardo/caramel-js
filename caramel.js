@@ -6,6 +6,7 @@ class Caramel {
 
     // Variabiles
     loadingTime = '';
+    DOMElements = [];
 
     // Settings
     printLoadingTime = false;
@@ -30,15 +31,6 @@ class Caramel {
      */
     warning(text) {
         if (!this.hideWarnings) console.warn(text);
-    }
-
-    /**
-     * Method that returns all the DOM elements with a specific attribute name
-     * @param {string} attribute - The attribute to search for
-     * @returns {any[]} A list of DOM elements
-     */
-    getAllElementsWithAttribute(attribute) {
-        return document.querySelectorAll('[' + attribute + ']');
     }
 
     /**
@@ -104,27 +96,32 @@ class Caramel {
     }
 
     /**
-     * Method that manages the cmIf elements
+     * Method that evaluates a string
+     * @param {string} string - The DOM elements to scan
+     * @returns {boolean} Returns true if the condition is valud
      */
-    loadConditions() {
-
-        // Get all the cmIf elements
-        const elements = this.getAllElementsWithAttribute('cmif');
-
-        // Check for the elements to hide
-        for (let element of elements) {
-            let cmIf = element.getAttribute('cmif');
-            try {
-                let checkCondition = eval(cmIf);
-                if (!checkCondition) {
-                    element.remove();
-                }
-            } catch(error) {
-                this.error(`The condition ${cmIf} is not valid: ${error}`);
-            }
-            element.removeAttribute('cmif');
+    conditionEvaluate(string) {
+        try {
+            let checkCondition = eval(string);
+            return checkCondition;
+        } catch(error) {
+            this.error(`The condition ${string} is not valid: ${error}`);
+            return false;
         }
+    }
 
+    /**
+     * Method that manages the cmIf elements, hiding those that don't return true
+     * @param {object[]} elements - The DOM elements to scan
+     */
+    loadConditions(elements) {
+        if (elements.length > 1) {
+            for (let element of elements) {
+                let cmIf = element.getAttribute('cmif');
+                if (!this.conditionEvaluate(cmIf)) element.remove();
+                element.removeAttribute('cmif');
+            }
+        }
     }
 
     /**
@@ -303,7 +300,7 @@ class Caramel {
 
         // DOM elements
         const templates = document.getElementsByTagName('cm-template');
-        const containers = this.getAllElementsWithAttribute('cm-template');
+        const containers = document.querySelectorAll('[cm-template]');
 
         for (let container of containers) {
             for (let template of templates) {
@@ -340,7 +337,7 @@ class Caramel {
     loadArrays() {
 
         // Get all cmFor DOM elements
-        const elements = this.getAllElementsWithAttribute('cmfor');
+        const elements = document.documentElement.querySelectorAll('[cmfor]');
 
         for (let element of elements) {
 
@@ -394,12 +391,11 @@ class Caramel {
 
                 elementHTML = element.outerHTML;
                 let toReplaceFound = this.findOccurrences(elementHTML);
+                if (!toReplaceFound || toReplaceFound.length < 1) continue;
 
                 // Replace element occurrences
                 let elementToAppend = '';
                 let elementModified;
-
-                if (!toReplaceFound || toReplaceFound.length < 1) continue;
 
                 for (let item of toReplaceFound) {
                     
@@ -445,7 +441,7 @@ class Caramel {
      * Method that hide all the API HTML blocks before the server response
      */
     apiCalls() {
-        let components = this.getAllElementsWithAttribute('api');
+        let components = document.documentElement.querySelectorAll('[api]');
         for (let item of components) {
             item.style.display = 'none';
         }
@@ -469,21 +465,28 @@ class Caramel {
         }
     }
 
+    loadDOMElements() {
+        const elements = document.documentElement.getElementsByTagName('*');
+        this.DOMElements = elements;
+        console.log(this.DOMElements);
+    }
+
     /**
      * Main method that loads Caramel
      */
     load() {
         const startTime = new Date().getTime();
+        //this.loadDOMElements();
         this.apiCalls();
         this.removeHTMLComments();
         this.loadTemplates();
-        this.loadConditions();
         this.loadComplexConditions();
         this.loadArrays();
+        this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
         this.loadVariables();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
-        if (this.printLoadingTime) this.warning(this.loadingTime);
+        if (this.printLoadingTime) console.warn(this.loadingTime);
     }
 
 }
