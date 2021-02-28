@@ -9,9 +9,27 @@ class Caramel {
 
     // Settings
     printLoadingTime = false;
+    hideWarnings = true;
+    hideErrors = false;
 
     constructor() {
 
+    }
+
+    /**
+     * Method that prints an error log if the enabled
+     * @param {string} text - The text to print
+     */
+    error(text) {
+        if (!this.hideErrors) console.error(text);
+    }
+
+    /**
+     * Method that prints a warning log if the enabled
+     * @param {string} text - The text to print
+     */
+    warning(text) {
+        if (!this.hideWarnings) console.warn(text);
     }
 
     /**
@@ -63,10 +81,10 @@ class Caramel {
             try {
                 data = eval(param);
                 if (!data) {
-                    console.warn(`The object ${param} is undefined.`);
+                    this.warning(`The object ${param} is undefined.`);
                 }
             } catch {
-                console.warn(`The object ${param} is undefined.`);
+                this.warning(`The object ${param} is undefined.`);
             }
 
             // Object building
@@ -102,7 +120,7 @@ class Caramel {
                     element.remove();
                 }
             } catch(error) {
-                console.error(`The condition ${cmIf} is not valid: ${error}`);
+                this.error(`The condition ${cmIf} is not valid: ${error}`);
             }
             element.removeAttribute('cmif');
         }
@@ -217,7 +235,7 @@ class Caramel {
         for (const ifElement of ifEvenElements) {
             ifElement.removeAttribute('ifEven');
             if (isNaN(data)) {
-                console.warn('The data "' + data + '" is not a number.');
+                this.warning('The data "' + data + '" is not a number.');
                 ifElement.remove();
             } else {
                 if (data % 2 !== 0) {
@@ -237,7 +255,7 @@ class Caramel {
         for (const ifElement of ifOddElements) {
             ifElement.removeAttribute('ifOdd');
             if (isNaN(data)) {
-                console.warn('The data "' + data + '" is not a number.');
+                this.warning('The data "' + data + '" is not a number.');
                 ifElement.remove();
             } else {
                 if (data % 2 == 0) {
@@ -311,7 +329,7 @@ class Caramel {
         // Check for templates not found
         for (let container of containers) {
             const templateName = container.getAttribute('cm-template');
-            if (templateName) console.warn(`Template not found: ${templateName}.`);
+            if (templateName) this.warning(`Template not found: ${templateName}.`);
         }
 
     }
@@ -335,7 +353,7 @@ class Caramel {
 
             // Skip iteration if the cmItem is not specified
             if (!cmItem) {
-                console.error(`You must specify a cmItem name for this cmFor: ${cmFor}.`);
+                this.error(`You must specify a cmItem name for this cmFor: ${cmFor}.`);
                 continue;
             }
 
@@ -343,12 +361,12 @@ class Caramel {
             try {
                 forData = eval(cmFor);
             } catch(error) {
-                console.warn(`The cmFor data of ${cmFor} is undefined.`);
+                this.warning(`The cmFor data of ${cmFor} is undefined.`);
                 continue;
             }
 
             if (!forData) {
-                console.warn(`The cmFor data of ${cmFor} is undefined.`);
+                this.warning(`The cmFor data of ${cmFor} is undefined.`);
                 continue;
             }
 
@@ -465,7 +483,7 @@ class Caramel {
         this.loadVariables();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
-        if (this.printLoadingTime) console.warn(this.loadingTime);
+        if (this.printLoadingTime) this.warning(this.loadingTime);
     }
 
 }

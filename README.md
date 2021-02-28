@@ -306,6 +306,8 @@ You can use block of code called **templates**. This is very useful when you hav
 - **ifNotNumber**: is an HTML attribute that you can use to check if a variable is not a number.
 - **printLoadingTime**: is a variable that prints the loading time of Caramel.js.
 - **loadingTime**: is a variable that contains the last loading time of Caramel.js.
+- **hideErrors**: you can set this variable to true if you want to hide Caramel errors. Default is false.
+- **hideWarnings**: you can set this variable to false if you want to show Caramel warnings. Default is true.
 ## Custom brackets
 If you are using the offline JS file (caramel.js) you can customize the brackets and use any character you want. Just edit the constants at the beginning of the class:
 - CM_START_VAR_CHAR
