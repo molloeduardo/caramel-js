@@ -465,18 +465,11 @@ class Caramel {
         }
     }
 
-    loadDOMElements() {
-        const elements = document.documentElement.getElementsByTagName('*');
-        this.DOMElements = elements;
-        console.log(this.DOMElements);
-    }
-
     /**
      * Main method that loads Caramel
      */
     load() {
         const startTime = new Date().getTime();
-        //this.loadDOMElements();
         this.apiCalls();
         this.removeHTMLComments();
         this.loadTemplates();
