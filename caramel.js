@@ -112,10 +112,10 @@ class Caramel {
 
     /**
      * Method that manages the cmIf elements, hiding those that don't return true
-     * @param {object[]} elements - The DOM elements to scan
      */
-    loadConditions(elements) {
-        if (elements.length > 1) {
+    loadConditions() {
+        const elements = document.documentElement.querySelectorAll('[cmif]');
+        if (elements.length > 0) {
             for (let element of elements) {
                 let cmIf = element.getAttribute('cmif');
                 if (!this.conditionEvaluate(cmIf)) element.remove();
@@ -419,6 +419,14 @@ class Caramel {
 
                 }
 
+                // Check for cmIf conditions
+                const cmIfElements = elementModified.querySelectorAll('[cmif]');
+                for (const cmIfElement of cmIfElements) {
+                    if (!this.conditionEvaluate(cmIfElement.getAttribute('cmif'))) {
+                        cmIfElement.remove();
+                    }
+                }
+
                 // Generate final DOM element HTML
                 if (!newElement) {
                     newElement = this.removeSpaces(elementModified.innerHTML);
@@ -429,9 +437,18 @@ class Caramel {
                 dataCounter ++;
 
             }
+
+            let finalElement = document.createElement('div');
+            finalElement.innerHTML = newElement;
+            
+            // Check for cmIf conditions
+            const cmIfElements = finalElement.querySelectorAll('[cmif]');
+            for (const cmIfElement of cmIfElements) {
+                cmIfElement.removeAttribute('cmif');
+            }
             
             // Replace original element
-            element.outerHTML = newElement;
+            element.outerHTML = finalElement.innerHTML;
 
         }
     
@@ -475,7 +492,7 @@ class Caramel {
         this.loadTemplates();
         this.loadArrays();
         this.loadComplexConditions();
-        this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
+        this.loadConditions();
         this.loadVariables();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
