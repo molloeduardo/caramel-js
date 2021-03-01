@@ -422,9 +422,7 @@ class Caramel {
                 const cmIfElements = element.querySelectorAll('[cmif]');
                 for (const cmIfElement of cmIfElements) {
                     if (!this.conditionEvaluate(cmIfElement.getAttribute('cmif'))) {
-                        console.log(cmIfElement);
                         cmIfElement.remove();
-                        console.log(elementModified);
                     }
                 }
 
