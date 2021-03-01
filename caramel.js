@@ -489,7 +489,7 @@ class Caramel {
         this.loadTemplates();
         this.loadComplexConditions();
         this.loadArrays();
-        //this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
+        this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
         this.loadVariables();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
