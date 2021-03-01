@@ -43,14 +43,6 @@ class Caramel {
     }
 
     /**
-     * Method that removes all the HTML comments inside the page
-     */
-    removeHTMLComments() {
-        const pageHTML = document.documentElement.innerHTML;
-        document.documentElement.innerHTML = pageHTML.replace(/<!--[\s\S]*?-->/g, '');
-    }
-
-    /**
      * Method that scans an HTML string and looks for matches
      * @param {string} elementHTML - Element HTML to scan
      * @returns {object[]} A list of objects that contains the data found inside the elements
@@ -484,11 +476,11 @@ class Caramel {
 
     /**
      * Main method that loads Caramel
+     * @param {boolean} isAfterAjaxRequest - If true it prints (After AJAX request) before the loading time
      */
-    load() {
+    load(isAfterAjaxRequest) {
         const startTime = new Date().getTime();
         this.apiCalls();
-        this.removeHTMLComments();
         this.loadTemplates();
         this.loadArrays();
         this.loadComplexConditions();
@@ -496,6 +488,7 @@ class Caramel {
         this.loadVariables();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
+        if (isAfterAjaxRequest) this.loadingTime = '(After AJAX request) ' + this.loadingTime;
         if (this.printLoadingTime) console.warn(this.loadingTime);
     }
 
@@ -511,7 +504,7 @@ window.onload = function() {
 if (window.jQuery) {
     $.ajaxSetup({
         complete: function (xhr, settings) {
-            caramel.load();
+            caramel.load(true);
         }
     });
 }
