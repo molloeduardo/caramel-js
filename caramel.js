@@ -98,7 +98,7 @@ class Caramel {
     /**
      * Method that evaluates a string
      * @param {string} string - The DOM elements to scan
-     * @returns {boolean} Returns true if the condition is valud
+     * @returns {boolean} Returns true if the condition is valid
      */
     conditionEvaluate(string) {
         try {
@@ -418,18 +418,34 @@ class Caramel {
                     this.checkForOddNumber(elementModified, item.data);
 
                 }
+                
+                const cmIfElements = element.querySelectorAll('[cmif]');
+                for (const cmIfElement of cmIfElements) {
+                    if (!this.conditionEvaluate(cmIfElement.getAttribute('cmif'))) {
+                        console.log(cmIfElement);
+                        cmIfElement.remove();
+                        console.log(elementModified);
+                    }
+                }
 
                 // Generate final DOM element HTML
-                if (!newElement) {
-                    newElement = this.removeSpaces(elementModified.innerHTML);
-                } else {
-                    newElement += this.removeSpaces(elementModified.innerHTML);
+                if (elementModified) {
+                    if (!newElement) {
+                        newElement = this.removeSpaces(elementModified.innerHTML);
+                    } else {
+                        newElement += this.removeSpaces(elementModified.innerHTML);
+                    }
                 }
 
                 dataCounter ++;
 
             }
-            
+
+            const cmIfElements = element.querySelectorAll('[cmif]');
+            for (const cmIfElement of cmIfElements) {
+                cmIfElement.removeAttribute('cmif');
+            }
+                
             // Replace original element
             element.outerHTML = newElement;
 
@@ -475,7 +491,7 @@ class Caramel {
         this.loadTemplates();
         this.loadComplexConditions();
         this.loadArrays();
-        this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
+        //this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
         this.loadVariables();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
