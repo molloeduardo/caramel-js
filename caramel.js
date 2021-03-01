@@ -98,7 +98,7 @@ class Caramel {
     /**
      * Method that evaluates a string
      * @param {string} string - The DOM elements to scan
-     * @returns {boolean} Returns true if the condition is valid
+     * @returns {boolean} Returns true if the condition is valud
      */
     conditionEvaluate(string) {
         try {
@@ -418,32 +418,18 @@ class Caramel {
                     this.checkForOddNumber(elementModified, item.data);
 
                 }
-                
-                const cmIfElements = element.querySelectorAll('[cmif]');
-                for (const cmIfElement of cmIfElements) {
-                    if (!this.conditionEvaluate(cmIfElement.getAttribute('cmif'))) {
-                        cmIfElement.remove();
-                    }
-                }
 
                 // Generate final DOM element HTML
-                if (elementModified) {
-                    if (!newElement) {
-                        newElement = this.removeSpaces(elementModified.innerHTML);
-                    } else {
-                        newElement += this.removeSpaces(elementModified.innerHTML);
-                    }
+                if (!newElement) {
+                    newElement = this.removeSpaces(elementModified.innerHTML);
+                } else {
+                    newElement += this.removeSpaces(elementModified.innerHTML);
                 }
 
                 dataCounter ++;
 
             }
-
-            const cmIfElements = element.querySelectorAll('[cmif]');
-            for (const cmIfElement of cmIfElements) {
-                cmIfElement.removeAttribute('cmif');
-            }
-                
+            
             // Replace original element
             element.outerHTML = newElement;
 
@@ -487,8 +473,8 @@ class Caramel {
         this.apiCalls();
         this.removeHTMLComments();
         this.loadTemplates();
-        this.loadComplexConditions();
         this.loadArrays();
+        this.loadComplexConditions();
         this.loadConditions(document.documentElement.querySelectorAll('[cmif]'));
         this.loadVariables();
         const finalTime = new Date().getTime();
