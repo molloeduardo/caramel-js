@@ -278,7 +278,9 @@ class Caramel {
                 }
 
                 // Replace original DOM element
-                element.innerHTML = newElement;
+                if (newElement != element.innerHTML) {
+                    element.innerHTML = newElement;
+                }
 
             }
         }
@@ -504,7 +506,7 @@ window.onload = function() {
 if (window.jQuery) {
     $.ajaxSetup({
         complete: function (xhr, settings) {
-            caramel.load(true);
+            caramel.load();
         }
     });
 }
