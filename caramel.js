@@ -90,7 +90,6 @@ class Caramel {
                     if (isFromAttribute) {
                         elementModified = document.createElement('div');
                         elementModified.innerHTML = elementHTML;
-                        console.log(elementModified);
                         found = elementModified.querySelector('[' + toReplace.split('[').join('\\[').split(']').join('\\]') + ']');
                         data = eval(found.getAttribute(toReplace));
                     } else {
