@@ -280,6 +280,25 @@ In order to use AJAX you need the **api** attribute setted on true on the HTML e
     });
 </script>
 ```
+## CSS attributes
+You can use JavaScript variables to set dynamic CSS styles on your HTML elements. Conditions are allowed too. You can even mix string and variables together.
+```
+<script>
+    var textColor = '#0088ff';
+</script>
+
+<html>
+    <head>
+        <script src="https://creativajs.altervista.org/caramel-js/0.1.1/caramel.js"></script>
+    </head>
+    <body>
+        <h3>Simple colored text</h3>
+        <p [color]="textColor">Yeah, this is a blue text!</p>
+        <h3>Colored text with condition</h3>
+        <p [color]="1 === 1 ? 'green' : 'red'">I'm green because 1 equals 1 obviously.</p>
+    </body>
+</html>
+```
 ## Load HTML template
 You can use block of code called **templates**. This is very useful when you have to use a block of code multiple times.
 ```

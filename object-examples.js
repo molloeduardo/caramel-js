@@ -41,6 +41,8 @@ var arrayExample = [
     "Kiwi"
 ];
 
+var textColor = '#0088ff';
+
 var objectWithArrayOfObjects = {
     "batter":
         [

@@ -3,6 +3,8 @@ class Caramel {
     // Syntax constants
     CM_START_VAR_CHAR = '{{';
     CM_END_VAR_CHAR = '}}';
+    CM_START_CSS_ATTR_CHAR = '[';
+    CM_END_CSS_ATTR_CHAR = ']';
 
     // Variabiles
     loadingTime = '';
@@ -43,48 +45,98 @@ class Caramel {
     }
 
     /**
-     * Method that scans an HTML string and looks for matches
-     * @param {string} elementHTML - Element HTML to scan
+     * Method that check if an attribute is a CSS attribute
+     * @param {object} attribute - The attribute to check
+     * @returns {boolean} Returns true if the attribute is a CSS attribute
+     */
+    isCSSAttribute(attribute) {
+        return (
+            attribute.name.substring(0, this.CM_START_CSS_ATTR_CHAR.length) === this.CM_START_CSS_ATTR_CHAR 
+            && attribute.name.substring(attribute.name.length - this.CM_END_CSS_ATTR_CHAR.length, attribute.name.length) === this.CM_END_CSS_ATTR_CHAR
+        );
+    }
+
+    /**
+     * Method that scans an HTML string and looks for matches of start and end string.
+     * Then compiles a data object
+     * @param {string} elementHTML - HTML element to scan
+     * @param {string} startSearch - The first part of the string to find
+     * @param {string} endSearch - The end part of the string to find
+     * @param {boolean} isFromAttribute - If true the data will be searched inside an attribute
      * @returns {object[]} A list of objects that contains the data found inside the elements
      */
-    findOccurrences(elementHTML) {
+    generateDataFromOccurences(elementHTML, startSearch, endSearch, isFromAttribute) {
+
+        // Escaping searches
+        startSearch = startSearch.split('[').join('\\[');
+        endSearch = endSearch.split(']').join('\\]');
 
         // Initializing variables
-        let matches, data, param, toReplace;
-        let regex = new RegExp(`${this.CM_START_VAR_CHAR}(.*?)${this.CM_END_VAR_CHAR}`, 'g');
+        let matches, data, param, toReplace, elementModified, found;
+        let regex = new RegExp(`${startSearch}(.*?)${endSearch}`, 'g');
         let toReplaceFound = [];
 
         // Get all the occurrences and build the list of objects
         while (matches = regex.exec(elementHTML)) {
 
             // Matches data
-            param = matches[1].trim();
-            toReplace = matches[0];
+            if (matches[1]) {
+                param = matches[1].trim();
+                toReplace = matches[0];
 
-            // Check for data
-            try {
-                data = eval(param);
-                if (!data) {
+                // Check for data
+                try {
+                    
+                    if (isFromAttribute) {
+                        elementModified = document.createElement('div');
+                        elementModified.innerHTML = elementHTML;
+                        console.log(elementModified);
+                        found = elementModified.querySelector('[' + toReplace.split('[').join('\\[').split(']').join('\\]') + ']');
+                        data = eval(found.getAttribute(toReplace));
+                    } else {
+                        data = eval(param);
+                    }
+
+                    // Check for data
+                    if (!data) this.warning(`The object ${param} is undefined.`);
+
+                } catch {
                     this.warning(`The object ${param} is undefined.`);
                 }
-            } catch {
-                this.warning(`The object ${param} is undefined.`);
-            }
 
-            // Object building
-            let object = {
-                element: elementHTML,
-                param,
-                toReplace,
-                data
-            };
-            
-            toReplaceFound.push(object);
+                // Object building
+                let object = {
+                    element: elementHTML,
+                    param,
+                    toReplace,
+                    data
+                };
+                
+                toReplaceFound.push(object);
+            }
 
         }
 
         return toReplaceFound;
+        
+    }
+    
+    /**
+     * Method used to generate data for Caramel variables
+     * @param {string} elementHTML - HTML element to scan
+     * @returns {object[]} A list of objects that contains the data found inside the elements
+     */
+    generateVariablesData(elementHTML) {
+        return this.generateDataFromOccurences(elementHTML, this.CM_START_VAR_CHAR, this.CM_END_VAR_CHAR);
+    }
 
+    /**
+     * Method used to generate data for Caramel CSS attributes
+     * @param {string} elementHTML - HTML element to scan
+     * @returns {object[]} A list of objects that contains the data found inside the elements
+     */
+     generateCSSAttributesData(elementHTML) {
+        return this.generateDataFromOccurences(elementHTML, this.CM_START_CSS_ATTR_CHAR, this.CM_END_CSS_ATTR_CHAR, true);
     }
 
     /**
@@ -96,8 +148,8 @@ class Caramel {
         try {
             let checkCondition = eval(string);
             return checkCondition;
-        } catch(error) {
-            this.error(`The condition ${string} is not valid: ${error}`);
+        } catch (error) {
+            this.error(`The condition ${string} is not valid. ${error}`);
             return false;
         }
     }
@@ -258,16 +310,13 @@ class Caramel {
      * Method that manages the variables inside the DOM elements
      */
     loadVariables() {
-        
-        // Get all the DOM elements
-        const elements = document.documentElement.getElementsByTagName('*');
 
-        for (let element of elements) {
+        for (let element of this.DOMElements) {
             if (!element.getAttribute('cmfor') && !element.getAttribute('api')) {
 
                 // Get all the occurrences for the element
                 let elementHTML = element.innerHTML;
-                let toReplaceFound = this.findOccurrences(elementHTML);
+                let toReplaceFound = this.generateVariablesData(elementHTML);
 
                 // Replace all the occurrences found with the data
                 let newElement = elementHTML;
@@ -384,7 +433,7 @@ class Caramel {
                 }
 
                 elementHTML = element.outerHTML;
-                let toReplaceFound = this.findOccurrences(elementHTML);
+                let toReplaceFound = this.generateVariablesData(elementHTML);
                 if (!toReplaceFound || toReplaceFound.length < 1) continue;
 
                 // Replace element occurrences
@@ -412,7 +461,7 @@ class Caramel {
                     this.checkForOddNumber(elementModified, item.data);
 
                 }
-
+                
                 // Check for cmIf conditions
                 const cmIfElements = elementModified.querySelectorAll('[cmif]');
                 for (const cmIfElement of cmIfElements) {
@@ -427,7 +476,8 @@ class Caramel {
                 } else {
                     newElement += this.removeSpaces(elementModified.innerHTML);
                 }
-
+                
+                elementModified.remove();
                 dataCounter ++;
 
             }
@@ -448,6 +498,39 @@ class Caramel {
     
     }
 
+    loadCSSAttributes() {
+        let elementCSS = '';
+        let cssAttribute = '';
+        const elementsFound = [];
+        for (const element of this.DOMElements) {
+            for (const attribute of element.attributes) {
+                if (this.isCSSAttribute(attribute)) {
+                    cssAttribute = attribute.name.replace(this.CM_START_CSS_ATTR_CHAR, '').replace(this.CM_END_CSS_ATTR_CHAR, '').trim();
+                    try {
+                        elementsFound.push(element);
+                        elementCSS += `${cssAttribute}: ${eval(attribute.value)}; `;
+                    } catch (error) {
+                        elementCSS += `${cssAttribute}: ${attribute.value}; `;
+                    }
+                }
+            }
+            if (elementCSS) {
+                element.setAttribute('style', elementCSS.trim());
+                elementCSS = '';
+                cssAttribute = '';
+            }
+        }
+
+        // Remove CSS attributes
+        for (const element of elementsFound) {
+            for (const attribute of element.attributes) {
+                if (attribute.name.substring(0, 1) === this.CM_START_CSS_ATTR_CHAR && attribute.name.slice(-1) === this.CM_END_CSS_ATTR_CHAR) {
+                    element.removeAttribute(attribute.name);
+                }
+            }
+        }
+    }
+
     /**
      * Method that hide all the API HTML blocks before the server response
      */
@@ -466,7 +549,7 @@ class Caramel {
         let elementHTML = '';
         for (let element of elements) {
             elementHTML = element.innerHTML;
-            let toReplaceFound = this.findOccurrences(elementHTML);
+            let toReplaceFound = this.generateVariablesData(elementHTML);
             for (let item of toReplaceFound) {
                 this.checkForNumber(element, item.data);
                 this.checkForNotNumber(element, item.data);
@@ -482,12 +565,14 @@ class Caramel {
      */
     load(isAfterAjaxRequest) {
         const startTime = new Date().getTime();
+        this.DOMElements = document.documentElement.getElementsByTagName('*');
         this.apiCalls();
         this.loadTemplates();
         this.loadArrays();
         this.loadComplexConditions();
         this.loadConditions();
         this.loadVariables();
+        this.loadCSSAttributes();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
         if (isAfterAjaxRequest) this.loadingTime = '(After AJAX request) ' + this.loadingTime;
@@ -506,7 +591,7 @@ window.onload = function() {
 if (window.jQuery) {
     $.ajaxSetup({
         complete: function (xhr, settings) {
-            caramel.load();
+            caramel.load(true);
         }
     });
 }

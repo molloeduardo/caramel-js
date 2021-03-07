@@ -137,10 +137,16 @@
         <h4>Knowing if an array item is even or odd</h4>
         <ul>
             <li cmFor="arrayOfNumbers" cmItem="item">
-                <p ifEven ifNumber>{{ item }}<b>THIS IS EVEN</b></p>
+                <p ifEven ifNumber [color]="item">{{ item }}<b>THIS IS EVEN</b></p>
                 <p ifOdd ifNumber>{{ item }}<b>THIS IS ODD</b></p>
             </li>
         </ul>
+
+        <hr>
+
+        <h3>CSS attributes</h3>
+        <h4>This text color comes from a variable and is dynamic</h4>
+        <p [color]="textColor">Yeah! This is me!</p>
 
         <hr>
 
