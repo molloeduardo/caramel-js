@@ -43,6 +43,12 @@ var arrayExample = [
 
 var textColor = '#0088ff';
 
+var cssArray = [
+    { text: 'I am blue!', color: 'blue' },
+    { text: 'I am green!', color: 'green', },
+    { text: 'I am red!', color: 'red' }
+];
+
 var objectWithArrayOfObjects = {
     "batter":
         [

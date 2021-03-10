@@ -150,6 +150,16 @@
 
         <hr>
 
+        <h3>Array with CSS attributes<span style="color: #ee0000;"> (not working properly)</span></h3>
+        <h4>This text colors come from an array of objects</h4>
+        <ul>
+            <li cmFor="cssArray" cmItem="item">
+                <p [color]="item.color">{{ item.text }}</p>
+            </li>
+        </ul>
+
+        <hr>
+
         <h3>Templates</h3>
         <h4>This form comes from a template</h4>
         <div cm-template="inputs"></div>
