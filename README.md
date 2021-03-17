@@ -6,6 +6,7 @@ One of the biggest problems of using jQuery or pure JavaScript is that you can't
 <br>Caramel is the solution to this problems. You can:
 - Iterate through arrays and print variables and objects inside the HTML.
 - Check for variable values and hide/show blocks of code if the condition is not true.
+- Create custom and separated components (HTML, JS, CSS). This requires a web server.
 - Load parts of code that is repeated (templates).
 ## Getting started
 You can import the JS file in two ways:
@@ -296,6 +297,25 @@ You can use JavaScript variables to set dynamic CSS styles on your HTML elements
         <p [color]="textColor">Yeah, this is a blue text!</p>
         <h3>Colored text with condition</h3>
         <p [color]="1 === 1 ? 'green' : 'red'">I'm green because 1 equals 1 obviously.</p>
+    </body>
+</html>
+```
+## Create custom components
+- To create a component, after you have chosen a name, create a folder called **components**.
+- Inside this folder create a folder witht he name of the component.
+- Inside this folder you have to create 3 files that starts with the name of the component, in this case **test**.
+    - test.component.html
+    - test.component.js
+    - test.component.css
+The CSS will be applied only to the component itself, while the JS will be applied to the whole page, so be carefoul about conflicts.
+Components are slow to load, so you will see the variable name if you use Caramel variables. I suggest you to implement a loader that appears before the page finished loading.
+```
+<html>
+    <head>
+        <script src="https://creativajs.altervista.org/caramel-js/0.1/caramel.js"></script>
+    </head>
+    <body>
+        <cm-component name="test"></cm-component>
     </body>
 </html>
 ```

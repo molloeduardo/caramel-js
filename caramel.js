@@ -57,6 +57,73 @@ class Caramel {
     }
 
     /**
+     * Method that loads an external CSS file and change every attribute adding the cm-component ID prefix.
+     * Then add the content to a DOM element.
+     * @param {object} target - The container of the component
+     * @param {string} componentName - The name attribute of the component
+     * @param {string} url - The CSS file URL
+     * @callback - End the function
+     */
+    loadExternalCSS(target, componentName, url, callback) {
+        let request = new XMLHttpRequest();
+        request.open('GET', url, true);
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                let resp = request.responseText;
+                
+                let finalCSS = '';
+                const cssElements = resp.split('}');
+                for (let cssElement of cssElements) {
+                    let cssAttributeName = cssElement.match(/[^{]*/i)[0].trim();
+                    if (cssAttributeName) {
+                        let cssAttributeNameModified = `#cm-component-${componentName} ${cssAttributeName}`;
+                        cssElement = cssElement.split(cssAttributeName).join(cssAttributeNameModified) + '}';
+                    }
+                    cssElement = cssElement.trim();
+                    if (cssElement) finalCSS += cssElement;
+                }
+
+                const style = document.createElement('style');
+                style.innerHTML = finalCSS;
+                target.appendChild(style);
+                return callback();
+            }
+        }
+        request.send();
+    }
+
+    /**
+     * Method that loads an external HTML file content into a DOM element
+     * @param {object} target - The container of the component
+     * @param {string} url - The HTML file URL
+     * @callback - End the function
+     */
+    loadExternalHTML(target, url, callback) {
+        let request = new XMLHttpRequest();
+        request.open('GET', url, true);
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                let resp = request.responseText;
+                target.innerHTML = resp;
+                return callback();
+            }
+        }
+        request.send();
+    }
+
+    /**
+     * Method that loads an external JS file content into the DOM head
+     * @param {string} url - The JS file URL
+     */
+    appendJSToHead(url) {
+        const head  = document.getElementsByTagName('head')[0];
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        head.appendChild(script);
+    }
+
+    /**
      * Method that scans an HTML string and looks for matches of start and end string.
      * Then compiles a data object
      * @param {string} elementHTML - HTML element to scan
@@ -558,11 +625,31 @@ class Caramel {
         }
     }
 
+    loadComponents(callback) {
+        const containers = document.documentElement.getElementsByTagName('cm-component');
+        for (let container of containers) {
+            const componentName = container.getAttribute('name').trim();
+            container.setAttribute('id', `cm-component-${componentName}`);
+            const thisInstance = this;
+            try {
+                this.appendJSToHead('./components/' + componentName + '/' + componentName + '.component.js');
+                this.loadExternalHTML(container, './components/' + componentName + '/' + componentName + '.component.html', function() {
+                    thisInstance.loadExternalCSS(container, componentName, './components/' + componentName + '/' + componentName + '.component.css', function() {
+                        return callback();
+                    });
+                });
+                break;
+            } catch (error) {
+                this.error('Error loading a component. ' + error);
+            }
+        }
+    }
+
     /**
      * Main method that loads Caramel
-     * @param {boolean} isAfterAjaxRequest - If true it prints (After AJAX request) before the loading time
+     * @param {string} loadingDescription - Optional text inside brackets while printing loading time
      */
-    load(isAfterAjaxRequest) {
+    load(loadingDescription) {
         const startTime = new Date().getTime();
         this.DOMElements = document.documentElement.getElementsByTagName('*');
         this.apiCalls();
@@ -574,7 +661,7 @@ class Caramel {
         this.loadCSSAttributes();
         const finalTime = new Date().getTime();
         this.loadingTime = 'Caramel.js loaded in ' + (finalTime - startTime) + 'ms';
-        if (isAfterAjaxRequest) this.loadingTime = '(After AJAX request) ' + this.loadingTime;
+        if (loadingDescription) this.loadingTime = `(${loadingDescription}) ${this.loadingTime}`;
         if (this.printLoadingTime) console.warn(this.loadingTime);
     }
 
@@ -583,14 +670,22 @@ class Caramel {
 var caramel = new Caramel();
 
 window.onload = function() {
+
+    // Caramel loading
     caramel.load();
+
+    // Loading components and then reload Caramel
+    caramel.loadComponents(function() {
+        caramel.load('After components loading');
+    });
+
 }
 
 // Caramel update after an AJAX call
 if (window.jQuery) {
     $.ajaxSetup({
         complete: function (xhr, settings) {
-            caramel.load(true);
+            caramel.load('After AJAX request');
         }
     });
 }
