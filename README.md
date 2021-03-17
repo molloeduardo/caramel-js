@@ -301,6 +301,7 @@ You can use JavaScript variables to set dynamic CSS styles on your HTML elements
 </html>
 ```
 ## Create custom components
+In order to use components you need a web server.
 - To create a component, after you have chosen a name, create a folder called **components**.
 - Inside this folder create a folder witht he name of the component.
 - Inside this folder you have to create 3 files that starts with the name of the component, in this case **test**.
