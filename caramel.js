@@ -638,7 +638,6 @@ class Caramel {
                         return callback();
                     });
                 });
-                break;
             } catch (error) {
                 this.error('Error loading a component. ' + error);
             }
