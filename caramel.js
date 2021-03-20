@@ -11,7 +11,7 @@ class Caramel {
     DOMElements = [];
 
     // Settings
-    printLoadingTime = false;
+    printLoadingTime = true; 
     hideWarnings = true;
     hideErrors = false;
 
@@ -396,7 +396,7 @@ class Caramel {
                 if (newElement != element.innerHTML) {
                     element.innerHTML = newElement;
                 }
-
+                
             }
         }
         
@@ -645,12 +645,37 @@ class Caramel {
     }
 
     /**
+     * Method that saves the DOM elements inside an array.
+     * @param {object[]} elementsList - The array list of the elements
+     */
+    popuplateDOMElementsArray(elementsList) {
+        for (const domElement of elementsList) {
+            if (!this.DOMElements.includes(domElement)) {
+                this.DOMElements.push(domElement);
+            }
+        }
+    }
+
+    /**
+     * Methot that loads all the DOM elements
+     * Document elements in total are loaded last because I need the child components first
+     */
+    loadDOMElements() {
+        const headElements = document.head.getElementsByTagName('*');
+        const bodyElements = document.body.getElementsByTagName('*');
+        const documentElements = document.documentElement.getElementsByTagName('*');
+        this.popuplateDOMElementsArray(headElements);
+        this.popuplateDOMElementsArray(bodyElements);
+        this.popuplateDOMElementsArray(documentElements);
+    }
+
+    /**
      * Main method that loads Caramel
      * @param {string} loadingDescription - Optional text inside brackets while printing loading time
      */
     load(loadingDescription) {
         const startTime = new Date().getTime();
-        this.DOMElements = document.documentElement.getElementsByTagName('*');
+        this.loadDOMElements();
         this.apiCalls();
         this.loadTemplates();
         this.loadArrays();
