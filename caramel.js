@@ -158,9 +158,9 @@ class Caramel {
                         elementModified = document.createElement('div');
                         elementModified.innerHTML = elementHTML;
                         found = elementModified.querySelector('[' + toReplace.split('[').join('\\[').split(']').join('\\]') + ']');
-                        data = eval(found.getAttribute(toReplace));
+                        data = eval(found.getAttribute(toReplace)).toString();
                     } else {
-                        data = eval(param);
+                        data = eval(param).toString();
                     }
 
                     // Check for data
