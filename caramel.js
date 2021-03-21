@@ -1,5 +1,8 @@
 class Caramel {
 
+    // Caramel info
+    version = '0.1';
+
     // Syntax constants
     CM_START_VAR_CHAR = '{{';
     CM_END_VAR_CHAR = '}}';
@@ -11,7 +14,7 @@ class Caramel {
     DOMElements = [];
 
     // Settings
-    printLoadingTime = true; 
+    printLoadingTime = false; 
     hideWarnings = true;
     hideErrors = false;
 
