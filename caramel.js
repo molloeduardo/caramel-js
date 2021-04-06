@@ -633,11 +633,10 @@ class Caramel {
         for (let container of containers) {
             const componentName = container.getAttribute('name').trim();
             container.setAttribute('id', `cm-component-${componentName}`);
-            const thisInstance = this;
             try {
                 this.appendJSToHead('./components/' + componentName + '/' + componentName + '.component.js');
-                this.loadExternalHTML(container, './components/' + componentName + '/' + componentName + '.component.html', function() {
-                    thisInstance.loadExternalCSS(container, componentName, './components/' + componentName + '/' + componentName + '.component.css', function() {
+                this.loadExternalHTML(container, './components/' + componentName + '/' + componentName + '.component.html', () => {
+                    this.loadExternalCSS(container, componentName, './components/' + componentName + '/' + componentName + '.component.css', function() {
                         return callback();
                     });
                 });
